@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BugVortex AI — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ====================================================================
+       SIDEBAR
+  ===================================================================== -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">⬛</span>
+      <div>
+        <div class="logo-title">BugVortex AI</div>
+        <div class="logo-version">V2.0.4-BETA</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" data-page="dashboard">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+          <rect x="2" y="2" width="7" height="7" rx="1"/>
+          <rect x="11" y="2" width="7" height="7" rx="1"/>
+          <rect x="2" y="11" width="7" height="7" rx="1"/>
+          <rect x="11" y="11" width="7" height="7" rx="1"/>
+        </svg>
+        DASHBOARD
+      </a>
+      <a href="#" class="nav-item" data-page="history">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+          <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M10 6v4l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>
+        </svg>
+        HISTORY
+      </a>
+      <a href="#" class="nav-item" data-page="models">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="10" cy="5" r="2.5"/>
+          <circle cx="4" cy="15" r="2.5"/>
+          <circle cx="16" cy="15" r="2.5"/>
+          <line x1="10" y1="7.5" x2="4" y2="12.5"/>
+          <line x1="10" y1="7.5" x2="16" y2="12.5"/>
+        </svg>
+        MODELS
+      </a>
+      <a href="#" class="nav-item" data-page="docs">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor">
+          <rect x="4" y="2" width="12" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+          <line x1="7" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="7" y1="10" x2="13" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="7" y1="13" x2="10" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        DOCS
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <button class="deploy-btn" onclick="openDeployModal()">DEPLOY MODEL</button>
+      <a href="#" class="nav-item small">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="10" cy="10" r="8"/>
+          <line x1="10" y1="7" x2="10" y2="10"/>
+          <circle cx="10" cy="13" r="0.5" fill="currentColor"/>
+        </svg>
+        SUPPORT
+      </a>
+      <a href="#" class="nav-item small">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M16 17v-1a4 4 0 00-8 0v1"/>
+          <circle cx="12" cy="8" r="4"/>
+          <line x1="2" y1="17" x2="4" y2="17"/>
+          <line x1="2" y1="13" x2="6" y2="13"/>
+        </svg>
+        SIGN OUT
+      </a>
+    </div>
+  </aside>
+
+  <!-- ====================================================================
+       MAIN CONTENT
+  ===================================================================== -->
+  <main class="main-content">
+
+    <!-- TOP NAV -->
+    <header class="topnav">
+      <nav class="topnav-links">
+        <a href="#" class="topnav-link active">DASHBOARD</a>
+        <a href="#" class="topnav-link">HISTORY</a>
+        <a href="#" class="topnav-link">MODELS</a>
+        <a href="#" class="topnav-link">DOCS</a>
+      </nav>
+      <div class="topnav-actions">
+        <button class="icon-btn" title="Notifications">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+            <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6z"/>
+            <path d="M10 18a2 2 0 01-2-2h4a2 2 0 01-2 2z"/>
+          </svg>
+        </button>
+        <button class="icon-btn" title="Settings">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+        <div class="avatar">
+          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=BugVortex" alt="User" />
+        </div>
+      </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <div class="page-body">
+
+      <!-- HERO SECTION -->
+      <section class="hero-section">
+        <div class="hero-left">
+          <p class="status-label">SYSTEM STATUS: <span class="status-optimal">OPTIMAL</span></p>
+          <h1 class="hero-title">Vortex Engine <span class="accent">Active</span></h1>
+          <p class="hero-desc">
+            Monitoring 12 distributed clusters. Real-time bug detection and neural patching is
+            currently running at 98.4% efficiency.
+          </p>
+        </div>
+        <div class="hero-right">
+          <p class="metric-label">NEURAL LATENCY</p>
+          <p class="metric-value" id="latency-display">14ms</p>
+        </div>
+      </section>
+
+      <!-- TERMINAL + STATS ROW -->
+      <div class="content-row">
+
+        <!-- TERMINAL / CODE INPUT -->
+        <div class="terminal-card">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+            </div>
+            <span class="terminal-title">TERMINAL: PATCH_MANAGER.PY</span>
+            <button class="copy-btn" onclick="copyCode()" title="Copy code">
+              <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="terminal-body">
+            <textarea class="code-editor" id="code-input" spellcheck="false" placeholder="// Paste your C or Java code here...
+// Example:
+// int* ptr = NULL;
+// *ptr = 10;"><?php echo htmlspecialchars('import vortex_core as vx
+
+def initialize_neural_bridge(token):
+    engine = vx.Engine(mode="reactive")
+    patch = engine.scan_repository("root://deploy")
+    return patch.apply(verify=True)
+
+_'); ?></textarea>
+          </div>
+
+          <div class="terminal-footer">
+            <div class="lang-selector">
+              <button class="lang-btn active" onclick="setLang(this,'auto')">AUTO</button>
+              <button class="lang-btn" onclick="setLang(this,'c')">C</button>
+              <button class="lang-btn" onclick="setLang(this,'java')">JAVA</button>
+            </div>
+            <button class="analyze-btn" onclick="analyzeBug()">
+              <span class="btn-text">ANALYZE</span>
+              <span class="btn-spinner" id="spinner" style="display:none">⟳</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- STATS CARDS -->
+        <div class="stats-column">
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <div class="stat-icon secured">
+                <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+                  <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <span class="stat-badge green">SECURED</span>
+            </div>
+            <p class="stat-label">VULNERABILITIES FIXED</p>
+            <p class="stat-number" id="vuln-count">1,284</p>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <div class="stat-icon speed">
+                <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <span class="stat-badge cyan">+12% GAIN</span>
+            </div>
+            <p class="stat-label">RUNTIME SPEEDUP</p>
+            <p class="stat-number">342ms</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULT PANEL (hidden until analysis runs) -->
+      <div class="result-panel" id="result-panel" style="display:none">
+        <div class="result-header">
+          <span class="result-icon" id="result-icon">⚠</span>
+          <span class="result-title" id="result-title">ANALYSIS COMPLETE</span>
+        </div>
+        <div class="result-body">
+          <div class="result-item">
+            <span class="result-item-label">BUG DETECTED</span>
+            <span class="result-item-value" id="bug-detected">—</span>
+          </div>
+          <div class="result-item">
+            <span class="result-item-label">CONFIDENCE</span>
+            <span class="result-item-value" id="confidence-score">—</span>
+          </div>
+          <div class="result-item">
+            <span class="result-item-label">LIKELY ISSUE</span>
+            <span class="result-item-value" id="likely-issue">—</span>
+          </div>
+          <div class="result-item">
+            <span class="result-item-label">TOKENS ANALYZED</span>
+            <span class="result-item-value" id="tokens-analyzed">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIVE DEPLOYMENTS -->
+      <section class="deployments-section">
+        <div class="section-header">
+          <h2 class="section-title">ACTIVE DEPLOYMENTS</h2>
+          <a href="#" class="view-archive">VIEW ARCHIVE →</a>
+        </div>
+
+        <div class="deployments-grid">
+          <div class="deployment-card">
+            <div class="deployment-card-header">
+              <div>
+                <h3 class="deployment-name">Nexus Core API</h3>
+                <p class="deployment-region">REGION: US-EAST-1</p>
+              </div>
+              <span class="status-dot blue pulse"></span>
+            </div>
+            <div class="deployment-bar">
+              <div class="deployment-bar-fill" style="width: 99.9%"></div>
+            </div>
+            <div class="deployment-footer">
+              <span class="deployment-status-text">99.9% UPTIME</span>
+              <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" class="deployment-icon">
+                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-.293.707L13 10.414V15a1 1 0 01-.447.894l-4 2.5A1 1 0 017 17.5v-7.086L3.293 6.707A1 1 0 013 6V4z"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="deployment-card">
+            <div class="deployment-card-header">
+              <div>
+                <h3 class="deployment-name">Shadow Database</h3>
+                <p class="deployment-region">REGION: EU-WEST-2</p>
+              </div>
+              <span class="status-dot yellow"></span>
+            </div>
+            <div class="deployment-bar">
+              <div class="deployment-bar-fill warning" style="width: 62%"></div>
+            </div>
+            <div class="deployment-footer">
+              <span class="deployment-status-text">SYNCING...</span>
+              <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" class="deployment-icon">
+                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="deployment-card">
+            <div class="deployment-card-header">
+              <div>
+                <h3 class="deployment-name">Pulse Webhook</h3>
+                <p class="deployment-region">REGION: AS-SOUTH-1</p>
+              </div>
+              <span class="status-dot cyan pulse"></span>
+            </div>
+            <div class="deployment-bar">
+              <div class="deployment-bar-fill" style="width: 100%"></div>
+            </div>
+            <div class="deployment-footer">
+              <span class="deployment-status-text">LIVE - STABLE</span>
+              <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" class="deployment-icon">
+                <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+
+            <!-- RANK BADGE (overlapping the 3rd card, bottom right) -->
+            <div class="rank-badge">
+              <div class="rank-item">
+                <p class="rank-label">GLOBAL RANK</p>
+                <p class="rank-value accent">#412 TOP DEV</p>
+              </div>
+              <div class="rank-item">
+                <p class="rank-label">TOTAL PATCHES</p>
+                <p class="rank-value">14.2k</p>
+              </div>
+              <button class="rank-plus">+</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /page-body -->
+  </main>
+
+  <!-- ====================================================================
+       DEPLOY MODEL MODAL
+  ===================================================================== -->
+  <div class="modal-overlay" id="deploy-modal" onclick="closeDeployModal(event)">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 class="modal-title">DEPLOY MODEL</h2>
+        <button class="modal-close" onclick="closeDeployModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <label class="modal-label">MODEL PATH</label>
+        <input class="modal-input" type="text" value="saved_bug_predictor_model" id="model-path-input" />
+
+        <label class="modal-label">TARGET REGION</label>
+        <select class="modal-input" id="region-select">
+          <option value="us-east-1">US-EAST-1</option>
+          <option value="eu-west-2">EU-WEST-2</option>
+          <option value="as-south-1">AS-SOUTH-1</option>
+        </select>
+
+        <label class="modal-label">API ENDPOINT</label>
+        <input class="modal-input" type="text" value="http://localhost:8000/predict_bug" id="api-endpoint-input" />
+
+        <button class="analyze-btn full-width" onclick="deployModel()">CONFIRM DEPLOY</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
