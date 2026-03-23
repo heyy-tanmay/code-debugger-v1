@@ -69,6 +69,75 @@ logger.info(f"  - DEBUG_MODE: {DEBUG_MODE}")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# SECTION 1.5: SYNTAX VALIDATION (Basic Linter)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def basic_syntax_check(code: str) -> dict:
+    """
+    Perform basic syntax validation on C/Java code.
+    
+    This is a lightweight pre-check to catch obvious syntax errors
+    before sending code to the AI model. It checks for:
+    - Unbalanced brackets and parentheses
+    - Missing semicolons (heuristic)
+    
+    Args:
+        code: Code snippet to validate
+    
+    Returns:
+        Dictionary with structure:
+        {
+            "is_valid": bool,
+            "error": str or None
+        }
+    
+    Example:
+        >>> result = basic_syntax_check("int x = 5")  # Missing semicolon
+        >>> result["is_valid"]
+        False
+        >>> result["error"]
+        "Syntax Error: Missing semicolon (;) or invalid syntax near line 1"
+    """
+    
+    # 1. Check for missing or unbalanced curly brackets
+    if code.count('{') != code.count('}'):
+        return {"is_valid": False, "error": "Syntax Error: Missing or unbalanced curly brackets {}"}
+    
+    # 2. Check for missing or unbalanced parentheses
+    if code.count('(') != code.count(')'):
+        return {"is_valid": False, "error": "Syntax Error: Missing or unbalanced parentheses ()"}
+    
+    # 3. Check for missing semicolons (Basic heuristic for C/Java)
+    lines = code.split('\n')
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        
+        # Skip empty lines and comments
+        if not stripped or stripped.startswith('//') or stripped.startswith('/*'):
+            continue
+        
+        # Skip lines that naturally don't need semicolons
+        if stripped.endswith('{') or stripped.endswith('}') or stripped.endswith(';'):
+            continue
+        
+        # Skip function declarations, control structures, and preprocessor directives
+        keywords_to_skip = ['if', 'for', 'while', 'class', 'public', 'private', 'protected', 
+                           'void', 'else', '#include', 'import', 'package', 'struct', 'enum']
+        
+        if any(keyword in stripped for keyword in keywords_to_skip):
+            continue
+        
+        # If we reach here and line needs semicolon
+        if stripped and not stripped.endswith(';'):
+            # Check if it looks like a statement that should have a semicolon
+            if not any(stripped.endswith(x) for x in ['{', '}']):
+                return {"is_valid": False, "error": f"Syntax Error: Missing semicolon (;) or invalid syntax near line {i+1}"}
+    
+    # All checks passed
+    return {"is_valid": True, "error": None}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # SECTION 2: MODEL LOADING
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -425,6 +494,30 @@ async def predict_bug(request: PredictRequest):
                 status_code=400,
                 detail="code_snippet cannot be empty"
             )
+        
+        # ─────────────────────────────────────────────────────────────────
+        # NEW: SYNTAX CHECK (Basic Linter)
+        # This catches obvious syntax errors before sending to AI model
+        # ─────────────────────────────────────────────────────────────────
+        
+        logger.info("  → Running syntax validation...")
+        syntax_status = basic_syntax_check(request.code_snippet)
+        
+        if not syntax_status["is_valid"]:
+            # Syntax error detected - return immediately with 100% confidence
+            logger.warning(f"  ✗ Syntax error detected: {syntax_status['error']}")
+            
+            return {
+                "bug_detected": True,
+                "confidence_score": 1.0,  # 100% sure - it's a hard syntax error
+                "likely_issue": syntax_status["error"],
+                "error_type": "SYNTAX_ERROR",
+                "timestamp": datetime.utcnow().isoformat() + 'Z',
+                "language": request.language,
+                "filename": request.filename
+            }
+        
+        logger.info("  ✓ Syntax validation passed")
         
         # Check if model is loaded
         if model_manager is None:
