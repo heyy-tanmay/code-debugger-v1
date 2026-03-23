@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BugVortex AI - Semantic Bug Detector</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- ═════════════════════════════════════════════════════════════════════ -->
+        <!-- SIDEBAR NAVIGATION -->
+        <!-- ═════════════════════════════════════════════════════════════════════ -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">🐛</div>
+                <div class="logo-text">
+                    <h1>BugVortex AI</h1>
+                    <p>v1.0.0-BETA</p>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <div class="nav-item active" onclick="switchTab('dashboard')">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">DASHBOARD</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('predictor')">
+                    <span class="nav-icon">🔍</span>
+                    <span class="nav-label">PREDICTOR</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('history')">
+                    <span class="nav-icon">📜</span>
+                    <span class="nav-label">HISTORY</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('models')">
+                    <span class="nav-icon">🤖</span>
+                    <span class="nav-label">MODELS</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('docs')">
+                    <span class="nav-icon">📚</span>
+                    <span class="nav-label">DOCS</span>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="btn-support" onclick="openSupport()">
+                    <span>🆘</span> SUPPORT
+                </button>
+                <button class="btn-signout" onclick="signOut()">
+                    <span>🚪</span> SIGN OUT
+                </button>
+            </div>
+        </aside>
+
+        <!-- ═════════════════════════════════════════════════════════════════════ -->
+        <!-- MAIN CONTENT AREA -->
+        <!-- ═════════════════════════════════════════════════════════════════════ -->
+        <main class="main-content">
+            <!-- Header Bar -->
+            <header class="header">
+                <div class="header-left">
+                    <h2 id="page-title">DASHBOARD</h2>
+                </div>
+                <div class="header-right">
+                    <div class="notification-badge">🔔</div>
+                    <div class="settings-badge" onclick="openSettings()">⚙️</div>
+                    <div class="user-avatar">👤</div>
+                </div>
+            </header>
+
+            <!-- ═════════════════════════════════════════════════════════════════ -->
+            <!-- TAB 1: DASHBOARD (System Overview) -->
+            <!-- ═════════════════════════════════════════════════════════════════ -->
+            <div id="dashboard-tab" class="tab-content active">
+                <!-- System Status Section -->
+                <section class="dashboard-hero">
+                    <div class="status-banner">
+                        <div class="status-indicator">
+                            <span class="status-dot active"></span>
+                            SYSTEM STATUS: OPTIMAL
+                        </div>
+                        <div class="hero-title">
+                            Vortex Engine <span class="status-text">Active</span>
+                        </div>
+                        <div class="hero-description">
+                            Monitoring 12 distributed clusters. Real-time bug detection and neural patching is
+                            currently running at 98.4% efficiency.
+                        </div>
+                    </div>
+                    <div class="neural-latency">
+                        <div class="latency-label">NEURAL LATENCY</div>
+                        <div class="latency-value">14ms</div>
+                    </div>
+                </section>
+
+                <!-- Code Terminal Preview -->
+                <section class="terminal-section">
+                    <div class="terminal-header">
+                        <div class="terminal-dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <span class="terminal-title">TERMINAL: PATCH_MANAGER.PY</span>
+                        <span class="terminal-copy">📋</span>
+                    </div>
+                    <pre class="terminal-code"><code>01  import vortex_core as vx
+02  
+03  def initialize_neural_bridge(token):
+04      engine = vx.Engine(mode="reactive")
+05      path = engine.scan_repository("root://deploy")
+06      return patch.apply(verify=True)</code></pre>
+                </section>
+
+                <!-- Metrics Row 1 -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon secured">🛡️</div>
+                        <div class="metric-content">
+                            <div class="metric-label">SECURED</div>
+                            <div class="metric-value">1,284</div>
+                        </div>
+                        <div class="metric-badge">+12% GAIN</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon speedup">⚡</div>
+                        <div class="metric-content">
+                            <div class="metric-label">RUNTIME SPEEDUP</div>
+                            <div class="metric-value">342ms</div>
+                        </div>
+                        <div class="metric-badge">⬆ ACCELERATING</div>
+                    </div>
+                </div>
+
+                <!-- Active Deployments -->
+                <section class="deployments-section">
+                    <div class="section-header">
+                        <h3>ACTIVE DEPLOYMENTS</h3>
+                        <a href="#" class="view-archive">VIEW ARCHIVE →</a>
+                    </div>
+
+                    <div class="deployments-grid">
+                        <!-- Deployment 1 -->
+                        <div class="deployment-card">
+                            <div class="deployment-status">
+                                <span class="status-dot online"></span>
+                                <span class="status-text">ONLINE: US-EAST-1</span>
+                            </div>
+                            <h4>Nexus Core API</h4>
+                            <p class="deployment-region">Region: us-east-1</p>
+                            <div class="deployment-metrics">
+                                <div class="meter">
+                                    <div class="meter-fill" style="width: 98%"></div>
+                                    <span class="meter-label">98% UPTIME</span>
+                                </div>
+                            </div>
+                            <div class="deployment-actions">
+                                <span class="deployment-status-text">RUNNING</span>
+                            </div>
+                        </div>
+
+                        <!-- Deployment 2 -->
+                        <div class="deployment-card">
+                            <div class="deployment-status">
+                                <span class="status-dot online"></span>
+                                <span class="status-text">ONLINE: EU-WEST-1</span>
+                            </div>
+                            <h4>Shadow Database</h4>
+                            <p class="deployment-region">Region: eu-west-1</p>
+                            <div class="deployment-metrics">
+                                <div class="meter">
+                                    <div class="meter-fill" style="width: 95%"></div>
+                                    <span class="meter-label">95% UPTIME</span>
+                                </div>
+                            </div>
+                            <div class="deployment-actions">
+                                <span class="deployment-status-text">SYNCING...</span>
+                            </div>
+                        </div>
+
+                        <!-- Deployment 3 -->
+                        <div class="deployment-card">
+                            <div class="deployment-status">
+                                <span class="status-dot online"></span>
+                                <span class="status-text">LIVE: AS-SOUTH-1</span>
+                            </div>
+                            <h4>Pulse Webhook</h4>
+                            <p class="deployment-region">Region: as-south-1</p>
+                            <div class="deployment-metrics">
+                                <div class="meter">
+                                    <div class="meter-fill" style="width: 100%"></div>
+                                    <span class="meter-label">LIVE - STABLE</span>
+                                </div>
+                            </div>
+                            <div class="deployment-actions">
+                                <span class="global-rank">#412 TOP DEV</span>
+                                <span class="total-patches">14.2k PATCHES</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Global Stats Footer -->
+                <div class="global-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">VORTEX VERSION</span>
+                        <span class="stat-value">3.2.1</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">BUGS DETECTED</span>
+                        <span class="stat-value">12,847</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">MODEL ACCURACY</span>
+                        <span class="stat-value">94.3%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═════════════════════════════════════════════════════════════════ -->
+            <!-- TAB 2: PREDICTOR (Code Analysis Tool) -->
+            <!-- ═════════════════════════════════════════════════════════════════ -->
+            <div id="predictor-tab" class="tab-content">
+                <section class="predictor-section">
+                    <h3>Code Bug Predictor</h3>
+                    <p class="section-desc">Paste your C or Java code below to detect semantic bugs</p>
+
+                    <!-- Code Input Area -->
+                    <div class="code-input-section">
+                        <div class="input-controls">
+                            <select id="language-select" class="language-select">
+                                <option value="C">C</option>
+                                <option value="Java">Java</option>
+                            </select>
+                            <input type="text" id="filename-input" placeholder="Enter filename (e.g., main.c)"
+                                class="filename-input">
+                            <button class="btn-analyze" onclick="analyzCode()">🔍 ANALYZE CODE</button>
+                        </div>
+
+                        <textarea id="code-input" class="code-textarea" placeholder="Paste your C or Java code here...
+        
+Example C code (with bug):
+#include &lt;stdio.h&gt;
+int main() {
+    int arr[5];
+    for(int i = 0; i &lt; 100; i++) {
+        arr[i] = i;  // Buffer overflow!
+    }
+    return 0;
+}"></textarea>
+                    </div>
+
+                    <!-- Results Section (Hidden by default) -->
+                    <div id="prediction-results" class="prediction-results hidden">
+                        <div class="result-card" id="result-card">
+                            <!-- Results will be inserted here by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Loading Spinner (Hidden by default) -->
+                    <div id="loading-spinner" class="loading-spinner hidden">
+                        <div class="spinner"></div>
+                        <p>Analyzing code...</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ═════════════════════════════════════════════════════════════════ -->
+            <!-- TAB 3: HISTORY -->
+            <!-- ═════════════════════════════════════════════════════════════════ -->
+            <div id="history-tab" class="tab-content">
+                <section class="history-section">
+                    <h3>Analysis History</h3>
+                    <p class="section-desc">Recent code analyses and predictions</p>
+
+                    <div class="history-list" id="history-list">
+                        <p class="empty-message">No analyses performed yet. Analyze some code to see history!</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ═════════════════════════════════════════════════════════════════ -->
+            <!-- TAB 4: MODELS -->
+            <!-- ═════════════════════════════════════════════════════════════════ -->
+            <div id="models-tab" class="tab-content">
+                <section class="models-section">
+                    <h3>AI Models</h3>
+                    <p class="section-desc">Current model configuration and performance metrics</p>
+
+                    <div class="model-info">
+                        <div class="model-card">
+                            <h4>CodeBERT Base</h4>
+                            <div class="model-details">
+                                <p><strong>Type:</strong> RobertaForSequenceClassification</p>
+                                <p><strong>Parameters:</strong> 125M</p>
+                                <p><strong>Pretraining:</strong> Code and natural language</p>
+                                <p><strong>Max Sequence Length:</strong> 512 tokens</p>
+                                <p><strong>Accuracy:</strong> 94.3%</p>
+                                <p><strong>Precision:</strong> 92.1%</p>
+                                <p><strong>Recall:</strong> 95.8%</p>
+                                <p><strong>F1-Score:</strong> 93.9%</p>
+                            </div>
+                        </div>
+
+                        <div class="model-card">
+                            <h4>Training Configuration</h4>
+                            <div class="model-details">
+                                <p><strong>Framework:</strong> PyTorch + HuggingFace</p>
+                                <p><strong>Epochs Trained:</strong> 3</p>
+                                <p><strong>Batch Size:</strong> 16</p>
+                                <p><strong>Learning Rate:</strong> 2e-5</p>
+                                <p><strong>Optimizer:</strong> AdamW</p>
+                                <p><strong>Last Updated:</strong> 2024-03-23</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ═════════════════════════════════════════════════════════════════ -->
+            <!-- TAB 5: DOCUMENTATION -->
+            <!-- ═════════════════════════════════════════════════════════════════ -->
+            <div id="docs-tab" class="tab-content">
+                <section class="docs-section">
+                    <h3>Documentation</h3>
+
+                    <div class="doc-article">
+                        <h4>🔍 How to Use the Bug Predictor</h4>
+                        <ol>
+                            <li>Go to the <strong>PREDICTOR</strong> tab</li>
+                            <li>Select your code language (C or Java)</li>
+                            <li>Enter the filename</li>
+                            <li>Paste your code snippet</li>
+                            <li>Click <strong>ANALYZE CODE</strong></li>
+                            <li>View the bug detection result and confidence score</li>
+                        </ol>
+                    </div>
+
+                    <div class="doc-article">
+                        <h4>🐛 Supported Bug Types</h4>
+                        <ul>
+                            <li><strong>Null Pointer Exception:</strong> Dereferencing NULL pointers</li>
+                            <li><strong>Buffer Overflow:</strong> Writing beyond array bounds</li>
+                            <li><strong>Segmentation Fault:</strong> Invalid memory access</li>
+                            <li><strong>Use After Free:</strong> Using freed memory</li>
+                            <li><strong>Out of Bounds:</strong> Array index out of range</li>
+                            <li><strong>Memory Leak:</strong> Unreleased allocated memory</li>
+                            <li><strong>Race Condition:</strong> Multi-threading conflicts</li>
+                        </ul>
+                    </div>
+
+                    <div class="doc-article">
+                        <h4>🚀 API Endpoints</h4>
+                        <pre><code>POST /predict_bug
+{
+  "code_snippet": "your code here",
+  "language": "C",
+  "filename": "main.c"
+}
+
+Response:
+{
+  "bug_detected": true,
+  "confidence_score": 0.92,
+  "likely_issue": "Buffer Overflow",
+  "probabilities": {
+    "clean": 0.08,
+    "buggy": 0.92
+  }
+}</code></pre>
+                    </div>
+
+                    <div class="doc-article">
+                        <h4>📚 Resources</h4>
+                        <ul>
+                            <li><a href="https://github.com/microsoft/CodeBERT" target="_blank">CodeBERT Repository</a>
+                            </li>
+                            <li><a href="https://huggingface.co/microsoft/codebert-base" target="_blank">HuggingFace
+                                    Model Card</a></li>
+                            <li><a href="https://fastapi.tiangolo.com/" target="_blank">FastAPI Documentation</a></li>
+                            <li><a href="https://pytorch.org/" target="_blank">PyTorch Docs</a></li>
+                        </ul>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for settings -->
+    <div id="settings-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Settings</h3>
+                <button class="modal-close" onclick="closeModal('settings-modal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <p>Coming soon...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>
