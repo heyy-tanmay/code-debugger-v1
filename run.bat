@@ -91,6 +91,6 @@ echo ║                                                                        
 echo ╚═════════════════════════════════════════════════════════════════════════╝
 echo.
 
-python api_server.py
+python main.py
 
 pause
