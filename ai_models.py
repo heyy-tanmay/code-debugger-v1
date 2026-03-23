@@ -1,0 +1,224 @@
+"""
+═════════════════════════════════════════════════════════════════════════════
+                          AI MODELS MODULE
+                   (Advanced Code Generation Models)
+═════════════════════════════════════════════════════════════════════════════
+
+This module provides access to state-of-the-art code generation models:
+1. CodeT5 - Salesforce's transformer for code-to-code tasks
+2. Optimized pipelines for code fix generation
+
+Libraries Used:
+- transformers: HuggingFace Transformers library
+- torch: PyTorch for model execution
+═════════════════════════════════════════════════════════════════════════════
+"""
+
+import torch
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
+import logging
+from typing import Optional
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Device selection (GPU if available, CPU otherwise)
+DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+logger.info(f"[ai_models.py] Using device: {DEVICE}")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CODET5 CODE GENERATION MODEL
+# ─────────────────────────────────────────────────────────────────────────────
+
+class CodeT5Generator:
+    """
+    Singleton class to manage CodeT5 model for code generation and fixing.
+    
+    CodeT5 is a pre-trained encoder-decoder transformer model designed 
+    specifically for code-related tasks including:
+    - Code summarization
+    - Code documentation generation
+    - Code defect detection
+    - Code fix generation
+    
+    Reference: https://huggingface.co/Salesforce/codet5-base
+    
+    Why a class?
+    - Load model once, use many times (efficient)
+    - Avoid reloading model for every request (slow!)
+    - Encapsulates model-specific logic
+    """
+    
+    _instance = None
+    
+    def __new__(cls):
+        """Ensure only one instance exists (Singleton pattern)"""
+        if cls._instance is None:
+            cls._instance = super(CodeT5Generator, cls).__new__(cls)
+            cls._instance._initialize_model()
+        return cls._instance
+    
+    def __init__(self):
+        """Initialize the generator (called on first use)"""
+        self.pipeline = None
+        self.model = None
+        self.tokenizer = None
+    
+    def _initialize_model(self):
+        """
+        Download and load CodeT5 model from Hugging Face.
+        
+        The model is automatically cached locally after first download.
+        Subsequent uses will load from cache (faster).
+        """
+        try:
+            logger.info("\n[CodeT5Generator] Loading CodeT5-base model...")
+            logger.info("  This may take 1-2 minutes on first run (downloading model)")
+            logger.info("  Subsequent runs will use cached model (faster)")
+            
+            # Model name from Salesforce
+            model_name = "Salesforce/codet5-base"
+            
+            # Load tokenizer
+            logger.info(f"  → Loading tokenizer from {model_name}...")
+            self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+            logger.info("    ✓ Tokenizer loaded")
+            
+            # Load model
+            logger.info(f"  → Loading model from {model_name}...")
+            self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+            self.model.to(DEVICE)
+            self.model.eval()  # Set to evaluation mode
+            logger.info("    ✓ Model loaded and set to evaluation mode")
+            
+            # Create text2text generation pipeline
+            logger.info("  → Creating text2text-generation pipeline...")
+            self.pipeline = pipeline(
+                "text2text-generation",
+                model=self.model,
+                tokenizer=self.tokenizer,
+                device=0 if torch.cuda.is_available() else -1,
+                framework="pt"
+            )
+            logger.info("    ✓ Pipeline ready\n")
+            
+            logger.info("✓ CodeT5 model initialized successfully\n")
+            
+        except Exception as e:
+            logger.error(f"\n✗ Error initializing CodeT5 model: {e}")
+            logger.error("  Make sure you have:")
+            logger.error("  - Internet connection (for HuggingFace download)")
+            logger.error("  - ~1GB disk space for model")
+            logger.error("  - Enough RAM (2GB+)")
+            raise
+    
+    def generate_code_fix(
+        self,
+        buggy_code: str,
+        max_length: int = 256,
+        num_beams: int = 4,
+        early_stopping: bool = True
+    ) -> str:
+        """
+        Generate a fixed version of buggy code using CodeT5.
+        
+        Args:
+            buggy_code: Raw C/Java code with bugs as input string
+            max_length: Maximum output tokens (default: 256)
+            num_beams: Beam search width for generation (default: 4)
+            early_stopping: Stop search early when done (default: True)
+        
+        Returns:
+            Fixed code string generated by CodeT5
+        
+        Example:
+            >>> generator = CodeT5Generator()
+            >>> buggy = "int arr[5]; arr[100] = 0;"
+            >>> fixed = generator.generate_code_fix(buggy)
+            >>> print(fixed)
+            # Output: "int arr[5]; if(i < 5) arr[i] = 0;"
+        """
+        
+        if not self.pipeline:
+            logger.error("Pipeline not initialized. Call _initialize_model() first.")
+            return "Error: Model not loaded"
+        
+        if not buggy_code or len(buggy_code.strip()) == 0:
+            logger.warning("Empty code snippet provided")
+            return "Error: Empty code"
+        
+        try:
+            logger.info(f"[CodeT5] Generating fix for code ({len(buggy_code)} chars)...")
+            
+            # Prepare input - CodeT5 uses prefix for task specification
+            # For code fix/defect repair, we prefix with context
+            input_text = f"fix: {buggy_code}"
+            
+            logger.info(f"  Input: {input_text[:100]}..." if len(input_text) > 100 else f"  Input: {input_text}")
+            
+            # Generate output using the pipeline
+            # Parameters:
+            # - max_length: Limits output length
+            # - min_length: Ensures meaningful output
+            # - num_beams: Beam search for better quality
+            # - early_stopping: Stop when model predicts <end_sequence>
+            outputs = self.pipeline(
+                input_text,
+                max_length=max_length,
+                min_length=10,
+                num_beams=num_beams,
+                early_stopping=early_stopping
+            )
+            
+            # Extract the generated text
+            fixed_code = outputs[0]['generated_text']
+            
+            logger.info(f"  ✓ Fix generated ({len(fixed_code)} chars)")
+            logger.info(f"  Output: {fixed_code[:100]}..." if len(fixed_code) > 100 else f"  Output: {fixed_code}")
+            
+            return fixed_code
+        
+        except Exception as e:
+            logger.error(f"Error generating fix: {e}")
+            return f"Error generating fix: {str(e)}"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CONVENIENCE FUNCTIONS
+# ─────────────────────────────────────────────────────────────────────────────
+
+def generate_code_fix(buggy_code: str) -> str:
+    """
+    Convenience function to generate code fix.
+    
+    Automatically initializes and reuses the CodeT5Generator singleton.
+    
+    Args:
+        buggy_code: Raw code with bugs
+    
+    Returns:
+        Fixed code string
+    
+    Example:
+        >>> from ai_models import generate_code_fix
+        >>> buggy = "int *ptr = malloc(10); ptr = NULL; ptr[0] = 5;"
+        >>> fixed = generate_code_fix(buggy)
+    """
+    try:
+        generator = CodeT5Generator()
+        return generator.generate_code_fix(buggy_code)
+    except Exception as e:
+        logger.error(f"Error in generate_code_fix: {e}")
+        return f"Error: {str(e)}"
+
+
+# Initialize generator on module load (optional, but recommended for faster first request)
+try:
+    logger.info("\n[ai_models.py] Pre-loading CodeT5 model at startup...")
+    _code_generator = CodeT5Generator()
+    logger.info("[ai_models.py] ✓ Model pre-loaded, ready for inference\n")
+except Exception as e:
+    logger.warning(f"[ai_models.py] Warning: Could not pre-load CodeT5 model: {e}")
+    logger.warning("[ai_models.py] Model will be loaded on first request\n")

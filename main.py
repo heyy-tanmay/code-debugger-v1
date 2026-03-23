@@ -36,6 +36,9 @@ from datetime import datetime
 # Import LLM integration
 from llm_integration import GroqLLMManager, get_bug_explanation, get_code_fix
 
+# Import AI models for code generation
+from ai_models import generate_code_fix as generate_fix_from_codet5
+
 # Load environment variables from .env file
 load_dotenv()
 
@@ -301,6 +304,22 @@ class AnalysisEnhancedResponse(BaseModel):
     timestamp: str
     language: str
     filename: str
+
+
+class CodeFixGeneratorRequest(BaseModel):
+    """Request for CodeT5 code fix generation"""
+    code_snippet: str
+    language: Optional[str] = "C"
+    filename: Optional[str] = "code.c"
+
+
+class CodeFixGeneratorResponse(BaseModel):
+    """Response from CodeT5 code fix generator"""
+    original_code: str
+    fixed_code: str
+    language: str
+    filename: str
+    timestamp: str
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -630,6 +649,101 @@ async def security_analysis(request: PredictRequest):
         raise HTTPException(
             status_code=500,
             detail=f"Error: {str(e)}"
+        )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 5C: CODE FIX GENERATION ENDPOINT (CodeT5)
+# ─────────────────────────────────────────────────────────────────────────────
+
+@app.post("/fix")
+async def fix_code(request: CodeFixGeneratorRequest):
+    """
+    Generate a code fix using CodeT5 transformer model.
+    
+    This endpoint uses Salesforce's CodeT5-base model for code-to-code 
+    generation tasks. It takes buggy code as input and produces corrected code.
+    
+    Args:
+        request: CodeFixGeneratorRequest with code_snippet to fix
+    
+    Returns:
+        CodeFixGeneratorResponse with original and fixed code
+    
+    Example:
+        POST /fix
+        {
+            "code_snippet": "int *ptr = malloc(10); ptr = NULL; ptr[0] = 5;",
+            "language": "C",
+            "filename": "buggy.c"
+        }
+        
+        Response:
+        {
+            "original_code": "int *ptr = malloc(10); ptr = NULL; ptr[0] = 5;",
+            "fixed_code": "int *ptr = malloc(10); if(ptr) ptr[0] = 5; free(ptr);",
+            "language": "C",
+            "filename": "buggy.c",
+            "timestamp": "2024-03-23T10:30:45.123Z"
+        }
+    
+    Note:
+        - First request may take 1-2 minutes as model is downloaded
+        - Subsequent requests use cached model (fast)
+        - Requires internet connection for first run only
+    """
+    
+    try:
+        # Validate input
+        if not request.code_snippet or len(request.code_snippet.strip()) == 0:
+            raise HTTPException(
+                status_code=400,
+                detail="code_snippet cannot be empty"
+            )
+        
+        # Log request details
+        logger.info(f"\n[/fix] Code fix request received:")
+        logger.info(f"  - Language: {request.language}")
+        logger.info(f"  - File: {request.filename}")
+        logger.info(f"  - Code length: {len(request.code_snippet)} chars")
+        logger.info(f"  - Code preview: {request.code_snippet[:80]}...")
+        
+        # Generate fix using CodeT5
+        logger.info(f"  - Calling CodeT5 model for fix generation...")
+        fixed_code = generate_fix_from_codet5(request.code_snippet)
+        
+        # Check for errors
+        if "Error" in fixed_code:
+            logger.error(f"  ✗ CodeT5 returned error: {fixed_code}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"Code generation failed: {fixed_code}"
+            )
+        
+        # Log success
+        logger.info(f"  ✓ Fix generated successfully")
+        logger.info(f"  - Fixed code length: {len(fixed_code)} chars")
+        logger.info(f"  - Fixed code preview: {fixed_code[:80]}...\n")
+        
+        # Build response
+        response = {
+            "original_code": request.code_snippet,
+            "fixed_code": fixed_code,
+            "language": request.language,
+            "filename": request.filename,
+            "timestamp": datetime.utcnow().isoformat() + 'Z'
+        }
+        
+        return response
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[/fix] Error during code fix generation: {e}")
+        logger.error(f"  Traceback: {type(e).__name__}: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error generating code fix: {str(e)}"
         )
 
 

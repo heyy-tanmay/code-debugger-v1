@@ -12,9 +12,10 @@
 # MACHINE LEARNING & NEURAL NETWORKS
 # ─────────────────────────────────────────────────────────────────────────────
 
-# PyTorch - Deep learning framework (GPU acceleration support)
+# PyTorch - Deep learning framework (required by transformers and CodeT5)
+# Note: For faster installation on limited bandwidth, use:
+#   pip install torch==2.0.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
 torch==2.0.0
-# Alternative (lighter): # Install specific CPU/GPU version from pytorch.org
 
 # Transformers - HuggingFace library for pre-trained models
 transformers==4.35.0
